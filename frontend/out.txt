@@ -1,0 +1,36 @@
+          gas: 500000,
+          });
+        }
+        toast.dismiss(txToast);
+
+        // Phase 3: Confirm registration (include categories and price)
+        const finalizingToast = toast.loading("Finalizing registration...");
+        try {
+          const confirmation = await artworksAPI.confirmRegistration({
+            tx_hash: txResponse.hash,
+            from_address: selectedNetwork === "algorand"
+              ? (resolvedAlgorandAccount || algorandAccount || account)
+              : account,
+            metadata_uri: preparation.metadata_uri,
+            image_uri: preparation.image_uri,
+            image_metadata: preparation.image_metadata,
+            royalty_percentage: data.royalty_percentage,
+            price: finalPrice,
+            title: data.title,
+            description: data.description,
+            network: selectedNetwork || "wirefluid",
+            algorand_asa_id:
+              txResponse.assetIndex !== undefined && txResponse.assetIndex !== null
+                ? String(txResponse.assetIndex)
+                : null, // ✅ PASS ASA ID (JSON-safe)
+            registration_fee_microalgos:
+              selectedNetwork === "algorand"
+                ? preparation.registration_fee_microalgos ?? null
+                : null,
+            categories: {
+              medium: data.medium_category,
+              style: isPSLTicket ? "PSL_SMART_TICKET" : data.style_category,
+              subject: isPSLTicket ? "PSL_SMART_TICKET" : data.subject_category,
+              other_medium: data.other_medium || null,
+              other_style: data.other_style || null,
+              other
